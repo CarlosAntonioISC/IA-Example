@@ -12,11 +12,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.iaexample.data.TaskEntity
 
 /**
@@ -24,7 +24,7 @@ import com.example.iaexample.data.TaskEntity
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskListScreen(viewModel: TaskListViewModel = viewModel()) {
+fun TaskListScreen(viewModel: TaskListViewModel = hiltViewModel()) {
     val tasks by viewModel.tasks.collectAsState()
 
     Scaffold(

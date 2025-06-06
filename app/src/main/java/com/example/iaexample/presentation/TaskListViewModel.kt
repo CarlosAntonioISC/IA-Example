@@ -1,11 +1,11 @@
 package com.example.iaexample.presentation
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.iaexample.data.RepositoryProvider
 import com.example.iaexample.data.TaskEntity
 import com.example.iaexample.domain.TaskRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -14,9 +14,10 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for listing pending tasks.
  */
-class TaskListViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository: TaskRepository = RepositoryProvider.provideRepository(application)
+@HiltViewModel
+class TaskListViewModel @Inject constructor(
+    private val repository: TaskRepository
+) : ViewModel() {
 
     /** Stream of pending tasks exposed to the UI. */
     val tasks: StateFlow<List<TaskEntity>> =
