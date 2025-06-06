@@ -37,4 +37,11 @@ class TaskListViewModel @Inject constructor(
             repository.delete(task)
         }
     }
+
+    /** Add a new task to the list. */
+    fun addTask(title: String, description: String?) {
+        viewModelScope.launch {
+            repository.insert(TaskEntity(title = title, description = description))
+        }
+    }
 }
