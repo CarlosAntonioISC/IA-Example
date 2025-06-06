@@ -9,9 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,10 +24,11 @@ import com.example.iaexample.data.TaskEntity
 @Composable
 fun TaskListScreen(viewModel: TaskListViewModel = hiltViewModel()) {
     val tasks by viewModel.tasks.collectAsState()
+    var showAddDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { /* TODO open Add task screen */ }) {
+            FloatingActionButton(onClick = { showAddDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Task")
             }
         }
@@ -43,6 +42,16 @@ fun TaskListScreen(viewModel: TaskListViewModel = hiltViewModel()) {
                 )
             }
         }
+    }
+
+    if (showAddDialog) {
+        AddTaskDialog(
+            onAdd = { title, description ->
+                viewModel.addTask(title, description)
+                showAddDialog = false
+            },
+            onDismiss = { showAddDialog = false }
+        )
     }
 }
 
@@ -81,4 +90,45 @@ private fun TaskItem(
             Icon(Icons.Default.Delete, contentDescription = "Delete")
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AddTaskDialog(
+    onAdd: (String, String?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onAdd(title, description.ifBlank { null })
+                },
+                enabled = title.isNotBlank()
+            ) { Text("Add") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        },
+        title = { Text("Add Task") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Title") }
+                )
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description (optional)") }
+                )
+            }
+        }
+    )
 }
